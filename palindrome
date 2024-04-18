@@ -1,0 +1,92 @@
+
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <form action="CheckServlet.do" method="POST">
+        <h1>Start</h1>
+        <p>Enter the palindrome below</p>
+        <label>Enter word:</label>
+        <input type="text" name="word" required="">
+        <input type="submit" value="SUBMIT">
+        </form>
+    </body>
+</html>
+
+
+package za.ac.tut;
+
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
+
+public class CheckServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String word = request.getParameter("word");
+        HttpSession session = request.getSession();
+        boolean checked = checkIfIsPalindrome(word);
+
+        Object processedWordCount = session.getAttribute("wordCount");
+        int wordCount;
+        if (processedWordCount != null) {
+            wordCount = (int) processedWordCount;
+            wordCount++;
+
+        } else {
+            wordCount = 1;
+        }
+
+        Object Palindrome = session.getAttribute("palindrCount");
+        int palindrCount;
+        if (Palindrome != null) {
+            palindrCount = (int) Palindrome;
+        } else {
+            palindrCount=0;
+        }
+        session.setAttribute("word", word);
+        session.setAttribute("palindrCount", palindrCount);
+        session.setAttribute("wordCount", wordCount);
+        session.setAttribute("checked", checked);
+        RequestDispatcher disp = request.getRequestDispatcher("output.jsp");
+        disp.forward(request, response);
+    }
+
+    private boolean checkIfIsPalindrome(String word) {
+        boolean isPalindrome = false;
+        String revesed = "";
+        for (int i = word.length() - 1; i >= 0; i--) {
+            revesed += word.charAt(i);
+        }
+        if (word.equals(revesed)) {
+            isPalindrome = true;
+        }
+        return isPalindrome;
+    }
+
+}
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>JSP Page</title>
+    </head>
+    <body>
+        <h1>here is the summary below</h1>
+        <%
+        String word = (String)session.getAttribute("word");
+        %>
+        <p><%=word%></p>
+    </body>
+</html>
